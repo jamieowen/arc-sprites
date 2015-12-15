@@ -1,0 +1,27 @@
+{
+  "name": "arc-sprites",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ArcSprites.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jamieowen/arc-sprites.git"
+  },
+  "author": "Jamie Owen <hello@jamieowen.com> (=)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jamieowen/arc-sprites/issues"
+  },
+  "homepage": "https://github.com/jamieowen/arc-sprites",
+  "devDependencies": {
+    "beefy": "^2.1.5",
+    "tape": "^4.2.2",
+    "three.js": "^0.73.0"
+  }
+}
