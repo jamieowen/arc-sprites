@@ -5,12 +5,14 @@ var defaultOpts = {
 	radius: 200,
 	thickness: 10,
 	resolution: 1,
-	debug: false,
-	debugColor: '#dddddd',
-	debugAlpha: 0.05,
+
 	color: '#ffffff',
 	stepMin: 1 * toRadians, // the minimum arc texture size in radians
-	stepMax: 90 * toRadians // // the maximum arc texture size in radians
+	stepMax: 90 * toRadians, // // the maximum arc texture size in radians
+
+	debug: false,
+	debugColor: '#dddddd',
+	debugAlpha: 0.05
 };
 
 var ArcSprites = function( opts ){

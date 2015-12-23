@@ -6,9 +6,10 @@ var TexturePacker = require( 'texture-packer' );
 
 window.onload = function(){
 
+	var resolution = 2;
 	var stageSize = 600;
 	var renderer = PIXI.autoDetectRenderer( stageSize,stageSize, {
-		resolution: 1,
+		resolution: resolution,
 		backgroundColor: 0x222222
 	});
 
@@ -18,9 +19,11 @@ window.onload = function(){
 
 	document.body.appendChild( renderer.view );
 	document.body.style.backgroundColor = '#000';
+	renderer.view.style.width = ( renderer.view.width / resolution ) + 'px';
+	renderer.view.style.height = ( renderer.view.height / resolution ) + 'px';
 
 	var start = 40;
-	var count = 20;
+	var count = 10;
 	var span = 20;
 
 	var radii = [];
@@ -33,15 +36,15 @@ window.onload = function(){
 
 	var packer = new TexturePacker();
 	var baseTexture = PIXI.BaseTexture.fromCanvas( packer.canvas );
-
+	baseTexture.resolution = resolution;
 	// render multiple arc sprites of different radii
 
 	for( var i = 0; i<radii.length; i++ ){
 
 		arcSprite = new ArcSprites({
 			radius: radii[i],
-			thickness: span * 0.1,
-			resolution: 1,
+			thickness: span * 0.45,
+			resolution: resolution,
 			debug: false,
 			color: '#ffffff'
 		});
@@ -76,16 +79,16 @@ window.onload = function(){
 
 	packer.forEach( function( source, texture, packed ){
 
-		texture.frame.x = packed.x;
-		texture.frame.y = packed.y;
-		texture.frame.width = packed.width;
-		texture.frame.height = packed.height;
+		texture.frame.x = packed.x / resolution;
+		texture.frame.y = packed.y / resolution;
+		texture.frame.width = packed.width / resolution;
+		texture.frame.height = packed.height / resolution;
 
 		texture._updateUvs();
 
 	} );
 
-	//document.body.appendChild( packer.canvas );
+	document.body.appendChild( packer.canvas );
 
 	var getPooled = function( pool, idx, texture ){
 		var sprite;
@@ -120,7 +123,6 @@ window.onload = function(){
 
 				var sprite = getPooled( pool, idx, texture );
 				if( !sprite.parent ) {
-					sprite.tint = 0xff0000;
 					entry.container.addChild( sprite );
 				}
 				sprite.rotation = radians;
