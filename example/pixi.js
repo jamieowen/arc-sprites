@@ -24,7 +24,7 @@ window.onload = function(){
 
 	var start = 40;
 	var count = 10;
-	var span = 20;
+	var span = 30;
 
 	var radii = [];
 	for( var i = 0; i<count; i++ ){
@@ -45,7 +45,7 @@ window.onload = function(){
 			radius: radii[i],
 			thickness: span * 0.45,
 			resolution: resolution,
-			debug: false,
+			debug: true,
 			color: '#ffffff'
 		});
 

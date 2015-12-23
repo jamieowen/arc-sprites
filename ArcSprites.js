@@ -5,6 +5,7 @@ var defaultOpts = {
 	radius: 200,
 	thickness: 10,
 	resolution: 1,
+	trim: false,
 
 	color: '#ffffff',
 	stepMin: 1 * toRadians, // the minimum arc texture size in radians
@@ -13,6 +14,7 @@ var defaultOpts = {
 	debug: false,
 	debugColor: '#dddddd',
 	debugAlpha: 0.05
+
 };
 
 var ArcSprites = function( opts ){
@@ -63,10 +65,7 @@ ArcSprites.prototype = {
 	generate: function( map ){
 
 		// for now keep dimensions of canvases the same.
-		//var w = 128;//( this._opts.radius/2 ) + ( this._opts.thickness * 2 );
-		//var h = 128;//w;//this._opts.radius/2;
-
-		var w = ( this._opts.radius / 2 ) + ( this._opts.thickness * 2 );
+		var w = Math.ceil( ( this._opts.radius * 0.5 ) + ( this._opts.thickness * 0.5 ) );
 		var h = w;
 
 		w *= this._opts.resolution;
@@ -89,7 +88,6 @@ ArcSprites.prototype = {
 			//arc(x, y, radius, startAngle, endAngle, anticlockwise)
 			context = canvas.getContext('2d');
 
-
 			if( this._opts.debug ){
 				context.globalAlpha = this._opts.debugAlpha;
 				context.fillStyle = this._opts.debugColor;
@@ -110,8 +108,6 @@ ArcSprites.prototype = {
 			//context.fill();
 			//console.log( 'DEG : ', i, entry, deg, radians );
 
-
-
 			entry.canvas = canvas;
 			if( map ) {
 				texture = map(canvas, radians);
@@ -122,7 +118,6 @@ ArcSprites.prototype = {
 	},
 
 	drawRadians: function( radians, draw ){
-
 		var count = 0;
 		var stepStart = this._steps.length-1;
 		var entry;
@@ -133,8 +128,6 @@ ArcSprites.prototype = {
 			entry = this._steps[stepStart];
 			div = Math.floor( rad / entry.radians );
 
-			//console.log( 'ENTRY : ', entry.radians );
-
 			for( var i = 0; i<div; i++ ){
 
 				draw( count, radians - rad, entry.texture );
@@ -142,10 +135,7 @@ ArcSprites.prototype = {
 				count++;
 
 			}
-
-			//console.log( 'STEP :', stepStart );
 			stepStart--;
-
 		}
 	}
 
