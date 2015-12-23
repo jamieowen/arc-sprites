@@ -21,6 +21,7 @@
   "homepage": "https://github.com/jamieowen/arc-sprites",
   "devDependencies": {
     "beefy": "^2.1.5",
+    "pixi.js": "^3.0.8",
     "tape": "^4.2.2",
     "three.js": "^0.73.0"
   }
