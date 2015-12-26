@@ -6,14 +6,16 @@ var defaultOpts = {
 	thickness: 10,
 	resolution: 1,
 	trim: false,
+	trimPadding: 2,
 
+	arcOverdraw: 0.4 * toRadians, // play with this value if gaps appear
 	color: '#ffffff',
-	stepMin: 1 * toRadians, // the minimum arc texture size in radians
-	stepMax: 90 * toRadians, // // the maximum arc texture size in radians
+	segmentMin: 1 * toRadians, // the minimum arc texture size in radians
+	segmentMax: 45 * toRadians, // // the maximum arc texture size in radians
 
 	debug: false,
-	debugColor: '#dddddd',
-	debugAlpha: 0.05
+	debugColor: '#0000ff',
+	debugAlpha: 0.1
 
 };
 
@@ -39,12 +41,12 @@ var ArcSprites = function( opts ){
 		})
 	}.bind(this);
 
-	var min = this._opts.stepMin;
-	var max = this._opts.stepMax;
+	var min = this._opts.segmentMin;
+	var max = this._opts.segmentMax;
 
 	while( min < max ){
 		pushStep( min );
-		min *= 2;
+		min *= 3;
 	}
 	if( min !== max ){
 		pushStep( max );
@@ -58,59 +60,119 @@ module.exports = ArcSprites;
 
 ArcSprites.prototype = {
 
-	create: function( pool ){
-
-	},
-
 	generate: function( map ){
 
-		// for now keep dimensions of canvases the same.
-		var w = Math.ceil( ( this._opts.radius * 0.5 ) + ( this._opts.thickness * 0.5 ) );
-		var h = w;
+		var resolution 	= this._opts.resolution;
+		var trim 		= this._opts.trim;
+		var trimPadding = this._opts.trimPadding;
+		var thickness 	= this._opts.thickness * resolution;
+		var arcOverdraw = this._opts.arcOverdraw;
 
-		w *= this._opts.resolution;
-		h *= this._opts.resolution;
+		// subtract half thickness to output at exact specified radius
+		var radiusOuter = this._opts.radius * resolution;
+		var radius 		= radiusOuter - ( thickness * 0.5 );
+		var radiusInner = radius - ( thickness * 0.5 );
+		var radiusMask	= radiusOuter + ( thickness * 2.0 ) + 10.0; // add extra constant for smaller line thicknesses
+
+		var maxRadians  = this._steps[ this._steps.length-1 ].radians;
+		var width = Math.ceil( radius + ( thickness * 0.5 ) ); // TODO : correct this.. ( or limit > 90 )
+		var height = width;
 
 		var radians,context;
-		var canvas;
+		var drawCanvas,outputCanvas;
 		var texture;
 		var entry;
+		var trimX,trimY;
+
+		var createCanvas = function( w,h ){
+			var canvas = document.createElement( 'canvas' );
+			canvas.width  = w || width;
+			canvas.height = h || height;
+			return canvas;
+		};
+
+		// create one draw canvas that will be drawn to.
+		// the trimmed contents will be copied to the output canvas.
+		if( trim ){
+			drawCanvas = createCanvas();
+		}
 
 		for( var i = 0; i<this._steps.length; i++ ){
-			canvas = document.createElement( 'canvas' );
-
-			canvas.width = w;
-			canvas.height = h;
 
 			entry = this._steps[i];
 			radians = entry.radians;
 
-			//arc(x, y, radius, startAngle, endAngle, anticlockwise)
-			context = canvas.getContext('2d');
-
-			if( this._opts.debug ){
-				context.globalAlpha = this._opts.debugAlpha;
-				context.fillStyle = this._opts.debugColor;
-				context.rect(0,0,w+1,h+1);
-				context.fill();
+			if( trim ){
+				context = drawCanvas.getContext('2d');
+				context.clearRect( 0,0,width,height );
+			}else{
+				drawCanvas = createCanvas();
+				context = drawCanvas.getContext('2d');
 			}
 
+			// draw arc.
 			context.globalAlpha = 1.0;
-			context.beginPath();
-			var padd = this._opts.stepMin * 0.5;
-			context.arc( 0,0, ( this._opts.radius * this._opts.resolution ) / 2, -padd, radians+(padd*1.5), false );
+			context.globalCompositeOperation = 'source-over';
 
-			context.lineWidth = this._opts.thickness * this._opts.resolution;
+			context.lineWidth 	= thickness;
 			context.strokeStyle = this._opts.color;
+			context.beginPath();
+			context.arc( 0,0, radius, 0, maxRadians + arcOverdraw, false );
 			context.stroke();
+			context.closePath();
 
-			//context.fillStyle = this._opts.color;
-			//context.fill();
-			//console.log( 'DEG : ', i, entry, deg, radians );
+			// extract region we want using comp operations -
+			// gives a more consistent edge AA using this method
+			context.globalCompositeOperation = 'destination-in';
+			context.beginPath();
+			context.moveTo( 0,0 );
+			context.lineTo( Math.cos( 0 ) * radiusMask, Math.sin( 0 ) * radiusMask );
+			context.lineTo( Math.cos( radians * 0.5 ) * radiusMask, Math.sin( radians * 0.5 ) * radiusMask );
+			context.lineTo( Math.cos( radians + arcOverdraw ) * radiusMask, Math.sin( radians + arcOverdraw ) * radiusMask );
+			context.fillStyle = 'blue';
+			context.fill();
+			context.closePath();
 
-			entry.canvas = canvas;
-			if( map ) {
-				texture = map(canvas, radians);
+			// draw debug bg
+			if( this._opts.debug ){
+				context.globalCompositeOperation = 'source-over';
+				context.globalAlpha = this._opts.debugAlpha;
+				context.fillStyle 	= this._opts.debugColor;
+				context.beginPath();
+				context.rect(0,0,width,height);
+				context.fill();
+				context.closePath();
+
+				/**
+				context.globalAlpha = 1.0;
+				context.fillStyle 	= 'yellow';
+				context.beginPath();
+				context.rect(trimX,trimY,10,10);
+				context.fill();
+				context.closePath();
+				**/
+			}
+
+			if( trim ){
+
+				trimX = Math.floor( Math.cos( radians + arcOverdraw ) * radiusInner ) - trimPadding;
+				trimY = Math.ceil( Math.sin( radians + arcOverdraw ) * radiusOuter ) + trimPadding;
+
+				// create a trimmed canvas and output the generated data.
+				outputCanvas = createCanvas( width-trimX, trimY );
+				outputCanvas.getContext('2d').putImageData(
+					context.getImageData( trimX,0,outputCanvas.width,outputCanvas.height ),
+					0,0
+				);
+
+			}else{
+				outputCanvas = drawCanvas;
+			}
+
+			entry.canvas = outputCanvas;
+
+			if( map ){
+				texture = map(entry.canvas, radians);
 				entry.texture = texture;
 			}
 
@@ -118,6 +180,7 @@ ArcSprites.prototype = {
 	},
 
 	drawRadians: function( radians, draw ){
+
 		var count = 0;
 		var stepStart = this._steps.length-1;
 		var entry;
@@ -137,6 +200,7 @@ ArcSprites.prototype = {
 			}
 			stepStart--;
 		}
+
 	}
 
 };

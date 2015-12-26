@@ -14,6 +14,7 @@ window.onload = function(){
 	});
 
 	var stage = new PIXI.Container();
+	//stage.scale.set( 0.5 );
 	stage.position.x = stageSize / 2;
 	stage.position.y = stageSize / 2;
 
@@ -22,9 +23,11 @@ window.onload = function(){
 	renderer.view.style.width = ( renderer.view.width / resolution ) + 'px';
 	renderer.view.style.height = ( renderer.view.height / resolution ) + 'px';
 
-	var start = 40;
-	var count = 10;
-	var span = 30;
+	var start = 60;
+	var count = 6;
+	var span  = 20;
+	var thick = 18;
+	var trim  = true;
 
 	var radii = [];
 	for( var i = 0; i<count; i++ ){
@@ -43,10 +46,15 @@ window.onload = function(){
 
 		arcSprite = new ArcSprites({
 			radius: radii[i],
-			thickness: span * 0.45,
+			thickness: thick,
 			resolution: resolution,
-			debug: true,
-			color: '#ffffff'
+			trim: trim,
+
+			color: '#ffffff',
+			debug: false,
+			debugAlpha: 0.2,
+			debugColor: '#0000ff'
+
 		});
 
 		arcSprite.generate( function( canvas ){
@@ -94,6 +102,13 @@ window.onload = function(){
 		var sprite;
 		if( idx >= pool.length ){
 			sprite = new PIXI.Sprite( texture );
+
+			if( trim ){
+				sprite.anchor.set( 1,0 );
+			}else{
+				sprite.anchor.set( 0,0 );
+			}
+
 			pool.push( sprite );
 		}else{
 			sprite = pool[idx];
@@ -110,7 +125,7 @@ window.onload = function(){
 
 	var render = function(){
 
-		radians += toRadians * 4;
+		radians += toRadians * 0.5;
 
 		for( var i = 0; i<arcSprites.length; i++ ){
 
@@ -125,7 +140,18 @@ window.onload = function(){
 				if( !sprite.parent ) {
 					entry.container.addChild( sprite );
 				}
-				sprite.rotation = radians;
+
+				if( trim ){
+					sprite.position.set(
+						Math.cos( radians ) * entry.radius,
+						Math.sin( radians ) * entry.radius
+					);
+					sprite.rotation = radians;
+				}else{
+					sprite.position.set( 0,0 );
+					sprite.rotation = radians;
+				}
+
 				lastIdx = idx;
 			});
 
