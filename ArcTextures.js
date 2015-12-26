@@ -2,6 +2,7 @@
 var toRadians = Math.PI / 180;
 
 var defaultOpts = {
+
 	radius: 200,
 	thickness: 10,
 	resolution: 1,
@@ -19,7 +20,7 @@ var defaultOpts = {
 
 };
 
-var ArcSprites = function( opts ){
+var ArcTextures = function( opts ){
 
 	this._opts = opts || defaultOpts;
 
@@ -31,10 +32,10 @@ var ArcSprites = function( opts ){
 		}
 	}
 
-	this._steps = [];
+	this._segments = [];
 
-	var pushStep = function( radians ){
-		this._steps.push( {
+	var pushSegment = function( radians ){
+		this._segments.push( {
 			radians: radians,
 			texture: null,
 			canvas: null
@@ -45,20 +46,20 @@ var ArcSprites = function( opts ){
 	var max = this._opts.segmentMax;
 
 	while( min < max ){
-		pushStep( min );
+		pushSegment( min );
 		min *= 3;
 	}
 	if( min !== max ){
-		pushStep( max );
+		pushSegment( max );
 	}
 
 };
 
 
-module.exports = ArcSprites;
+module.exports = ArcTextures;
 
 
-ArcSprites.prototype = {
+ArcTextures.prototype = {
 
 	generate: function( map ){
 
@@ -74,7 +75,7 @@ ArcSprites.prototype = {
 		var radiusInner = radius - ( thickness * 0.5 );
 		var radiusMask	= radiusOuter + ( thickness * 2.0 ) + 10.0; // add extra constant for smaller line thicknesses
 
-		var maxRadians  = this._steps[ this._steps.length-1 ].radians;
+		var maxRadians  = this._segments[ this._segments.length-1 ].radians;
 		var width = Math.ceil( radius + ( thickness * 0.5 ) ); // TODO : correct this.. ( or limit > 90 )
 		var height = width;
 
@@ -97,9 +98,9 @@ ArcSprites.prototype = {
 			drawCanvas = createCanvas();
 		}
 
-		for( var i = 0; i<this._steps.length; i++ ){
+		for( var i = 0; i<this._segments.length; i++ ){
 
-			entry = this._steps[i];
+			entry = this._segments[i];
 			radians = entry.radians;
 
 			if( trim ){
@@ -182,13 +183,13 @@ ArcSprites.prototype = {
 	drawRadians: function( radians, draw ){
 
 		var count = 0;
-		var stepStart = this._steps.length-1;
+		var segStart = this._segments.length-1;
 		var entry;
 		var div;
 		var rad = radians;
 
-		while( stepStart >= 0 ){
-			entry = this._steps[stepStart];
+		while( segStart >= 0 ){
+			entry = this._segments[segStart];
 			div = Math.floor( rad / entry.radians );
 
 			for( var i = 0; i<div; i++ ){
@@ -198,7 +199,7 @@ ArcSprites.prototype = {
 				count++;
 
 			}
-			stepStart--;
+			segStart--;
 		}
 
 	}

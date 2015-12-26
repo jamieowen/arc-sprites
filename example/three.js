@@ -1,7 +1,7 @@
 
 var THREE = require( 'three.js' );
 
-var ArcSprites = require( '../ArcSprites' );
+var ArcTextures = require( '../ArcSprites' );
 
 window.onload = function(){
 
@@ -9,7 +9,7 @@ window.onload = function(){
 
 	var radius = 200;
 
-	var arcSprites = new ArcSprites({
+	var arcTextures = new ArcTextures({
 		radius: radius,
 		thickness: 8,
 		resolution: 2,
@@ -19,7 +19,7 @@ window.onload = function(){
 	var canvases  = [];
 	var materials = [];
 
-	arcSprites.generate( function( canvas ){
+	arcTextures.generate( function( canvas ){
 
 		// debug
 		//canvas.style.backgroundColor = '#fff';
@@ -88,7 +88,7 @@ window.onload = function(){
 		return mesh;
 	};
 
-	arcSprites.drawRadians( Math.PI * 0.4, function( idx, radians, material ){
+	arcTextures.drawRadians( Math.PI * 0.4, function( idx, radians, material ){
 
 		console.log( 'DRAW RADIANNS : ', idx, radians );
 
@@ -113,7 +113,7 @@ window.onload = function(){
 		camera.position.z = Math.sin( time * 0.01 ) * camDistance;
 		camera.lookAt(center);
 
-		//arcSprites.drawRadians( Math.PI * 0.25, function( idx, radians, texture ){
+		//arcTextures.drawRadians( Math.PI * 0.25, function( idx, radians, texture ){
 
 		//});
 

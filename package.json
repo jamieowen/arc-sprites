@@ -1,8 +1,8 @@
 {
-  "name": "arc-sprites",
+  "name": "arc-textures",
   "version": "1.0.0",
   "description": "",
-  "main": "ArcSprites.js",
+  "main": "ArcTextures.js",
   "directories": {
     "example": "example"
   },
@@ -11,18 +11,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jamieowen/arc-sprites.git"
+    "url": "https://github.com/jamieowen/arc-textures.git"
   },
   "author": "Jamie Owen <hello@jamieowen.com> (=)",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jamieowen/arc-sprites/issues"
+    "url": "https://github.com/jamieowen/arc-textures/issues"
   },
-  "homepage": "https://github.com/jamieowen/arc-sprites",
+  "homepage": "https://github.com/jamieowen/arc-textures",
   "devDependencies": {
     "beefy": "^2.1.5",
     "pixi.js": "^3.0.8",
-    "tape": "^4.2.2",
-    "three.js": "^0.73.0"
+    "tape": "^4.2.2"
   }
 }
