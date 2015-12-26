@@ -21,7 +21,6 @@
   "homepage": "https://github.com/jamieowen/arc-textures",
   "devDependencies": {
     "beefy": "^2.1.5",
-    "pixi.js": "^3.0.8",
-    "tape": "^4.2.2"
+    "pixi.js": "^3.0.8"
   }
 }
