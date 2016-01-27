@@ -115,6 +115,7 @@ ArcTextures.prototype = {
 			context.globalAlpha = 1.0;
 			context.globalCompositeOperation = 'source-over';
 
+			console.log( 'GENERATE : ', thickness );
 			context.lineWidth 	= thickness;
 			context.strokeStyle = this._opts.color;
 			context.beginPath();

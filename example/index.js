@@ -6,7 +6,7 @@ var TexturePacker = require( 'texture-packer' );
 
 window.onload = function(){
 
-	var resolution = 2;
+	var resolution = 1;
 	var stageSize = 600;
 	var renderer = PIXI.autoDetectRenderer( stageSize,stageSize, {
 		resolution: resolution,
@@ -23,11 +23,11 @@ window.onload = function(){
 	renderer.view.style.width = ( renderer.view.width / resolution ) + 'px';
 	renderer.view.style.height = ( renderer.view.height / resolution ) + 'px';
 
-	var start = 60;
-	var count = 6;
+	var start = 100;
+	var count = 1;
 	var span  = 20;
-	var thick = 18;
-	var trim  = true;
+	var thick = 30;
+	var trim  = false;
 
 	var radii = [];
 	for( var i = 0; i<count; i++ ){
@@ -125,7 +125,8 @@ window.onload = function(){
 
 	var render = function(){
 
-		radians += toRadians * 0.5;
+		// speed..
+		radians += toRadians * 2;//0.5;
 
 		for( var i = 0; i<arcTextures.length; i++ ){
 
